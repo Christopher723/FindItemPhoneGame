@@ -47,8 +47,6 @@ struct ItemView: View {
                     }
                 }
             }
-        }.onAppear(){
-            print(myImage.special)
         }
     }
 }

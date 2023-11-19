@@ -16,4 +16,8 @@ class MyViewModel: ObservableObject {
     init() {
             special = images.remove(at: Int.random(in: 0..<images.count))
         }
+    func reset(){
+        images = ["bananna","strawberry","cherry","blueberry","grape","kiwi","lemon","orange","watermelon"]
+        special = images.remove(at: Int.random(in: 0..<images.count))
+    }
 }
