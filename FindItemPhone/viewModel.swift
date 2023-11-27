@@ -7,7 +7,7 @@
 
 import Foundation
 import SwiftUI
-
+import GameKit
 
 class MyViewModel: ObservableObject {
     @Published var images = ["bananna","strawberry","cherry","blueberry","grape","kiwi","lemon","orange","watermelon"]
@@ -19,5 +19,13 @@ class MyViewModel: ObservableObject {
     func reset(){
         images = ["bananna","strawberry","cherry","blueberry","grape","kiwi","lemon","orange","watermelon"]
         special = images.remove(at: Int.random(in: 0..<images.count))
+    }
+    func authenticateUser() {
+        GKLocalPlayer.local.authenticateHandler = { vc, error in
+            guard error == nil else {
+                print(error?.localizedDescription ?? "")
+                return
+            }
+        }
     }
 }

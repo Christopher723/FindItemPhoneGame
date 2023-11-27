@@ -17,6 +17,10 @@ struct ContentView: View {
     @State private var startTime: Date?
     @State var isFinished = false
     
+    let highScoreKey = "highScore"
+    @State private var highScore: Double = UserDefaults.standard.double(forKey: "highScore")
+    
+    
     @State private var specialImagePosition: (row: Int, column: Int) = {
             (row: Int.random(in: 0..<10), column: Int.random(in: 0..<10))
         }()
@@ -53,12 +57,11 @@ struct ContentView: View {
                 .overlay(
                     ItemView(isFinished: $isFinished, specialImagePosition: specialImagePosition).environmentObject(myImage)
                         .mask(
-                            GeometryReader { geometry in
-                                Circle()
-                                    .frame(width: 100, height: 100) // Adjust the circle size as needed
-                                    .position(self.dragLocation)
-                                    .blendMode(.overlay)
-                            }
+                            Circle()
+                                .frame(width: 100, height: 100) // Adjust the circle size as needed
+                                .position(self.dragLocation)
+                                .blendMode(.overlay)
+                            
                         )
                 )
                 .gesture(DragGesture()
@@ -74,19 +77,20 @@ struct ContentView: View {
 
             VStack {
                 Spacer().frame(height: 100)
+                
                 HStack {
                     Text("Find:")
                         .font(.title)
                         .foregroundColor(.white)
-
+                    
                     Image(myImage.special)
                         .resizable()
                         .scaledToFit()
                         .frame(width: 50, height: 50)
                         .padding(.bottom, 10)
-
+                    
                     Spacer()
-
+                    
                     // Display time with milliseconds
                     Text("Time: \(formattedTime)")
                         .font(Font.system(.title, design: .monospaced))
@@ -94,33 +98,56 @@ struct ContentView: View {
                         .padding(.trailing, 20)
                 }
                 Spacer()
-                if isFinished{
-                    Button(action: {
-                    
-                    // Reset the game state here
-                    self.dragLocation = .zero
-                    self.isMoving = false
-                    self.elapsedTime = 0.0
-                    self.isFinished = false
-                    self.myImage.reset()
-                    generateRandomPosition()
+                
+                ZStack{
+                    HStack {
+                        Spacer()
+                        if isFinished {
+                            Button(action: {
+                                // Reset the game state here
+                                self.dragLocation = .zero
+                                self.isMoving = false
+                                self.elapsedTime = 0.0
+                                self.isFinished = false
+                                self.myImage.reset()
+                                
+                                generateRandomPosition()
+                                startTimer()
+                            }) {
+                                Text("Play Again")
+                                    .font(.title)
+                                    .foregroundColor(.white)
+                                    .padding()
+                                    .background(Color.blue)
+                                    .cornerRadius(10)
+                            }
+                        }
                         
-                    
-                    startTimer()
-                    
-                }) {
-                    Text("Play Again")
-                        .font(.title)
-                        .foregroundColor(.white)
-                        .padding()
-                        .background(Color.blue)
-                        .cornerRadius(10)
-                }
-                .padding()
+                        Spacer()
                     }
-                }
+                    ZStack {
+                        HStack{
+                            Spacer()
+                            Image(systemName: "trophy.fill")
+                                .resizable()
+                                .frame(width: 50, height: 50)
+                                .foregroundStyle(.white)
+                                .padding()
+                                .onTapGesture{
+                                    print(highScore)
+                                
+                                }
+                        }
+                    
+                    }
 
+                }
+                
+                
+                
+            }
         }
+        
         
         .edgesIgnoringSafeArea(.all)
         .onAppear {
@@ -128,6 +155,10 @@ struct ContentView: View {
         }
         .onChange(of: isFinished) {
             stopTimer()
+            if elapsedTime < highScore && elapsedTime > 0{
+            highScore = elapsedTime
+            UserDefaults.standard.set(highScore, forKey: highScoreKey)
+        }
             
         }
         .onChange(of: isFinished) {
