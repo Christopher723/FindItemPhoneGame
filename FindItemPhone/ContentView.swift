@@ -156,7 +156,6 @@ struct ContentView: View {
                 self.elapsedTime = 0.0
                 self.isFinished = false
                 self.myImage.reset()
-                
                 generateRandomPosition()
                 startTimer()
             }
